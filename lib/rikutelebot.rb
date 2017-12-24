@@ -1,5 +1,16 @@
 require "rikutelebot/version"
 
 module Rikutelebot
-  # Your code goes here...
+
+	Config = Struct.new(:token)
+	class Bot
+		def initialize
+			@conf = Config.new nil
+			yield @conf
+		end
+
+		def token
+			@conf.token
+		end
+	end
 end
