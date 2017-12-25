@@ -4,9 +4,9 @@ require 'json'
 
 module Rikutelebot
 
-	Config = Struct.new(:token) do
+	Config = Struct.new(:token, :offset) do
 		def getupdatesurl
-			"https://api.telegram.org/bot#{token}/getUpdates"
+			"https://api.telegram.org/bot#{token}/getUpdates?offset=#{offset}"
 		end
 	end
 	
@@ -26,7 +26,7 @@ module Rikutelebot
 
 	class Bot
 		def initialize
-			@conf = Config.new nil
+			@conf = Config.new nil, (File.exist?('offset') ? File.read('offset').to_i : 0)
 			@state = false
 			@commands = []
 			yield @conf
@@ -54,6 +54,11 @@ module Rikutelebot
 				chat = Chat.new(id, title, un)
 
 				yield Message.new(usr, chat, update['message']['text']) unless update['message']['text'].nil?
+			end
+			@conf.offset = j['result'].last['update_id'] + 1
+			File.open('offset', 'w') do |f|
+				f.write @conf.offset
+				f.close
 			end
 		end
 
