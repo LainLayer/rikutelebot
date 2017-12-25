@@ -38,8 +38,8 @@ module Rikutelebot
 
 		def on_message
 			updates = []
-			j = JSON.parse  open(@conf.getupdatesurl).read()
-			return if j['result'].length == 0
+			j = JSON.parse open(@conf.getupdatesurl).read()
+			return if j['result'].length == 0 or j.nil?
 			for update in j['result']
 				fn = update['message']['from']['first_name']
 				ln = update['message']['from']['last_name']
