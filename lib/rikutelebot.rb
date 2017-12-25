@@ -20,13 +20,23 @@ module Rikutelebot
 		end
 	end
 
+	Command = Struct.new(:command, :args) do
+
+	end
+
 	class Bot
 		def initialize
 			@conf = Config.new nil
+			@state = false
+			@commands = []
 			yield @conf
 		end
 
-		def run
+		def get_message_array
+			
+		end
+
+		def on_message
 			updates = []
 			j = JSON.parse  open(@conf.getupdatesurl).read()
 			for update in j['result']
@@ -39,12 +49,16 @@ module Rikutelebot
 
 				id = update['message']['chat']['id']
 				title = update['message']['chat']['title']
-				un = update['message']['chat']['username'] || 'Private chat'
+				un = update['message']['chat']['username'] || "(#{id}:#{title})"
 
 				chat = Chat.new(id, title, un)
 
 				yield Message.new(usr, chat, update['message']['text']) unless update['message']['text'].nil?
 			end
+		end
+
+		def commands
+
 		end
 
 	end
